@@ -11,7 +11,13 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied.  his is a gentle reminder about the session planned for tomorrow for the students who are interested in transferring to the UoW, UK for further education, during or after their degree at IIT.
+
+The session will be conducted in OLB (ground floor) from 10 AM till 11 AM on 14 October 2019 (Monday) by Ms.Gariema Sharma, an official from the University of Westminster who is on an official visit to IIT.
+
+All interested students are invited to attend, without registration.
+
+Best Regards,See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -36,7 +42,17 @@ import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.Properties;
 
+/**
+ * The NATS publisher connection
+ */
 class NatsConnection {
+
+    /**
+     * Create a new connection to the NATS server.
+     *
+     * @param messageContext the message context.
+     * @return the publisher connection.
+     */
     Connection createConnection(MessageContext messageContext) throws IOException, InterruptedException  {
         Axis2MessageContext axis2mc = (Axis2MessageContext) messageContext;
         String servers = (String) axis2mc.getAxis2MessageContext().getProperty(NatsConstants.SERVERS);
@@ -73,6 +89,8 @@ class NatsConnection {
         String noEcho = (String) messageContext.getProperty(NatsConstants.NO_ECHO);
 
         Properties serverConfig = new Properties();
+
+        // Default values for these properties are empty strings
         serverConfig.setProperty(Options.PROP_SERVERS, servers);
         serverConfig.setProperty(Options.PROP_USERNAME, username);
         serverConfig.setProperty(Options.PROP_PASSWORD, password);
@@ -84,6 +102,7 @@ class NatsConnection {
         serverConfig.setProperty(Options.PROP_NORANDOMIZE, noRandomize);
         serverConfig.setProperty(Options.PROP_NO_ECHO, noEcho);
 
+        // Setting these properties with null will throw NullPointerException or setting them to an empty string will cause errors
         setServerConfigProperty(serverConfig, Options.PROP_INBOX_PREFIX, inboxPrefix);
         setServerConfigProperty(serverConfig, Options.PROP_RECONNECT_BUF_SIZE, reconnectBufferSize);
         setServerConfigProperty(serverConfig, Options.PROP_RECONNECT_WAIT, reconnectWait);
@@ -120,20 +139,41 @@ class NatsConnection {
         return Nats.connect(builder.build());
     }
 
+    /**
+     * Check whether the parameter provided is empty or not.
+     *
+     * @param serverConfig the server configuration properties object.
+     * @param property the property to set.
+     * @param parameter the parameter value to set to the property.
+     */
     private void setServerConfigProperty(Properties serverConfig, String property, String parameter) {
         if (StringUtils.isNotEmpty(parameter)) {
             serverConfig.setProperty(property, parameter);
         }
     }
 
+    /**
+     * Create the SSLContext to establish connection with TLS.
+     *
+     * @param protocol the TLS protocol.
+     * @param trustStoreType the type of trust store file.
+     * @param trustStoreLocation the location of trust store file.
+     * @param trustStorePassword the password of trust store file.
+     * @param keyStoreType the type of key store file.
+     * @param keyStoreLocation the location of key store file.
+     * @param keyStorePassword the password of key store file.
+     * @param keyManagerAlgorithm the TLS algorithm for the KeyManagerFactory.
+     * @param trustManagerAlgorithm the TLS algorithm for the TrustManagerFactory.
+     * @return the SSLContext or null if any exceptions.
+     */
     private static SSLContext createSSLContext(String protocol, String trustStoreType, String trustStoreLocation, String trustStorePassword, String keyStoreType, String keyStoreLocation, String keyStorePassword, String keyManagerAlgorithm, String trustManagerAlgorithm) {
         Log log = LogFactory.getLog(NatsConnection.class);
         try {
-            KeyStore keyStore = loadKeystore(keyStoreType, keyStoreLocation, trustStorePassword);
+            KeyStore keyStore = loadKeyStore(keyStoreType, keyStoreLocation, trustStorePassword);
             KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(keyManagerAlgorithm.equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : keyManagerAlgorithm);
             keyManagerFactory.init(keyStore, keyStorePassword.toCharArray());
 
-            KeyStore trustStore = loadKeystore(trustStoreType, trustStoreLocation, trustStorePassword);
+            KeyStore trustStore = loadKeyStore(trustStoreType, trustStoreLocation, trustStorePassword);
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(trustManagerAlgorithm.equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : trustManagerAlgorithm);
             trustManagerFactory.init(trustStore);
 
@@ -146,7 +186,15 @@ class NatsConnection {
         }
     }
 
-    private static KeyStore loadKeystore(String storeType, String storeLocation, String trustStorePassword) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+    /**
+     * Load key store and trust store.
+     *
+     * @param storeType the type of store file.
+     * @param storeLocation the location of store file.
+     * @param trustStorePassword the password of trust store file.
+     * @return the store.
+     */
+    private static KeyStore loadKeyStore(String storeType, String storeLocation, String trustStorePassword) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         KeyStore store = KeyStore.getInstance(storeType.equals("") ? NatsConstants.DEFAULT_STORE_TYPE : storeType);
         try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(storeLocation))) {
             store.load(in, trustStorePassword.toCharArray());
