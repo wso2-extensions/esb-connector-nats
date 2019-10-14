@@ -18,9 +18,6 @@
 package org.wso2.carbon.esb.connector;
 
 class NatsConstants {
-
-    private NatsConstants() {}
-
     // Configuration properties for sendMessage operation
     static final String SUBJECT = "subject";
     static final String GET_RESPONSE = "getResponse";
@@ -62,7 +59,6 @@ class NatsConstants {
     static final String MAX_CONNECTION_POOL_SIZE = "nats.maxPoolSize";
 
     // Default values
-    static final String DEFAULT_NATS_SERVER_URL = "nats://localhost:4222";
     static final String DEFAULT_CONNECTION_POOL_SIZE = "5";
     static final String DEFAULT_TLS_ALGORITHM = "SunX509";
     static final String DEFAULT_STORE_TYPE = "JKS";
