@@ -32,26 +32,11 @@ import javax.net.ssl.TrustManagerFactory;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.UnrecoverableKeyException;
-import java.security.KeyManagementException;
+import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.Properties;
 
-/**
- * The NATS publisher connection
- */
 class NatsConnection {
-
-    /**
-     * Create a new connection to the NATS server.
-     *
-     * @param messageContext the message context.
-     * @return the publisher connection.
-     */
     Connection createConnection(MessageContext messageContext) throws IOException, InterruptedException  {
         Axis2MessageContext axis2mc = (Axis2MessageContext) messageContext;
         String servers = (String) axis2mc.getAxis2MessageContext().getProperty(NatsConstants.SERVERS);
@@ -88,8 +73,6 @@ class NatsConnection {
         String noEcho = (String) messageContext.getProperty(NatsConstants.NO_ECHO);
 
         Properties serverConfig = new Properties();
-
-        // Default values for these properties are empty strings
         serverConfig.setProperty(Options.PROP_SERVERS, servers);
         serverConfig.setProperty(Options.PROP_USERNAME, username);
         serverConfig.setProperty(Options.PROP_PASSWORD, password);
@@ -101,7 +84,6 @@ class NatsConnection {
         serverConfig.setProperty(Options.PROP_NORANDOMIZE, noRandomize);
         serverConfig.setProperty(Options.PROP_NO_ECHO, noEcho);
 
-        // Setting these properties with null will throw NullPointerException or setting them to an empty string will cause errors
         setServerConfigProperty(serverConfig, Options.PROP_INBOX_PREFIX, inboxPrefix);
         setServerConfigProperty(serverConfig, Options.PROP_RECONNECT_BUF_SIZE, reconnectBufferSize);
         setServerConfigProperty(serverConfig, Options.PROP_RECONNECT_WAIT, reconnectWait);
@@ -129,7 +111,7 @@ class NatsConnection {
         }
 
         if (StringUtils.isNotEmpty(tlsProtocol + tlsTrustStoreType + tlsTrustStoreLocation + tlsTrustStorePassword + tlsKeyStoreType + tlsKeyStoreLocation + tlsKeyStorePassword + tlsKeyManagerAlgorithm + tlsTrustManagerAlgorithm)) {
-            SSLContext sslContext = createSSLContext(new TLSConnection(tlsProtocol, tlsTrustStoreType, tlsTrustStoreLocation, tlsTrustStorePassword, tlsKeyStoreType, tlsKeyStoreLocation, tlsKeyStorePassword, tlsKeyManagerAlgorithm, tlsTrustManagerAlgorithm));
+            SSLContext sslContext = createSSLContext(tlsProtocol, tlsTrustStoreType, tlsTrustStoreLocation, tlsTrustStorePassword, tlsKeyStoreType, tlsKeyStoreLocation, tlsKeyStorePassword, tlsKeyManagerAlgorithm, tlsTrustManagerAlgorithm);
             if (sslContext != null) {
                 builder.sslContext(sslContext);
             }
@@ -138,37 +120,24 @@ class NatsConnection {
         return Nats.connect(builder.build());
     }
 
-    /**
-     * Check whether the parameter provided is empty or not.
-     *
-     * @param serverConfig the server configuration properties object.
-     * @param property the property to set.
-     * @param parameter the parameter value to set to the property.
-     */
     private void setServerConfigProperty(Properties serverConfig, String property, String parameter) {
         if (StringUtils.isNotEmpty(parameter)) {
             serverConfig.setProperty(property, parameter);
         }
     }
 
-    /**
-     * Create the SSLContext to establish connection with TLS.
-     *
-     * @param tlsConnection the TLS connection object.
-     * @return the SSLContext or null if any exceptions.
-     */
-    private static SSLContext createSSLContext(TLSConnection tlsConnection) {
+    private static SSLContext createSSLContext(String protocol, String trustStoreType, String trustStoreLocation, String trustStorePassword, String keyStoreType, String keyStoreLocation, String keyStorePassword, String keyManagerAlgorithm, String trustManagerAlgorithm) {
         Log log = LogFactory.getLog(NatsConnection.class);
         try {
-            KeyStore keyStore = loadKeyStore(tlsConnection.getKeyStoreType(), tlsConnection.getKeyStoreLocation(), tlsConnection.getTrustStorePassword());
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(tlsConnection.getKeyManagerAlgorithm().equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : tlsConnection.getKeyManagerAlgorithm());
-            keyManagerFactory.init(keyStore, tlsConnection.getKeyStorePassword().toCharArray());
+            KeyStore keyStore = loadKeystore(keyStoreType, keyStoreLocation, trustStorePassword);
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(keyManagerAlgorithm.equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : keyManagerAlgorithm);
+            keyManagerFactory.init(keyStore, keyStorePassword.toCharArray());
 
-            KeyStore trustStore = loadKeyStore(tlsConnection.getTrustStoreType(), tlsConnection.getTrustStoreLocation(), tlsConnection.getTrustStorePassword());
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(tlsConnection.getTrustManagerAlgorithm().equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : tlsConnection.getTrustManagerAlgorithm());
+            KeyStore trustStore = loadKeystore(trustStoreType, trustStoreLocation, trustStorePassword);
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(trustManagerAlgorithm.equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : trustManagerAlgorithm);
             trustManagerFactory.init(trustStore);
 
-            SSLContext sslContext = SSLContext.getInstance(tlsConnection.getProtocol().equals("") ? Options.DEFAULT_SSL_PROTOCOL : tlsConnection.getProtocol());
+            SSLContext sslContext = SSLContext.getInstance(protocol.equals("") ? Options.DEFAULT_SSL_PROTOCOL : protocol);
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
             return sslContext;
         } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | UnrecoverableKeyException | KeyManagementException e) {
@@ -177,82 +146,11 @@ class NatsConnection {
         }
     }
 
-    /**
-     * Load key store and trust store.
-     *
-     * @param storeType the type of store file.
-     * @param storeLocation the location of store file.
-     * @param trustStorePassword the password of trust store file.
-     * @return the store.
-     */
-    private static KeyStore loadKeyStore(String storeType, String storeLocation, String trustStorePassword) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+    private static KeyStore loadKeystore(String storeType, String storeLocation, String trustStorePassword) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         KeyStore store = KeyStore.getInstance(storeType.equals("") ? NatsConstants.DEFAULT_STORE_TYPE : storeType);
         try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(storeLocation))) {
             store.load(in, trustStorePassword.toCharArray());
         }
         return store;
-    }
-}
-
-/**
- * Set the TLS connection properties to connect to the server with TLS.
- */
-class TLSConnection {
-    private String protocol;
-    private String trustStoreType;
-    private String trustStoreLocation;
-    private String trustStorePassword;
-    private String keyStoreType;
-    private String keyStoreLocation;
-    private String keyStorePassword;
-    private String keyManagerAlgorithm;
-    private String trustManagerAlgorithm;
-
-    TLSConnection(String protocol, String trustStoreType, String trustStoreLocation, String trustStorePassword, String keyStoreType, String keyStoreLocation, String keyStorePassword, String keyManagerAlgorithm, String trustManagerAlgorithm) {
-        this.protocol = protocol;
-        this.trustStoreType = trustStoreType;
-        this.trustStoreLocation = trustStoreLocation;
-        this.trustStorePassword = trustStorePassword;
-        this.keyStoreType = keyStoreType;
-        this.keyStoreLocation = keyStoreLocation;
-        this.keyStorePassword = keyStorePassword;
-        this.keyManagerAlgorithm = keyManagerAlgorithm;
-        this.trustManagerAlgorithm = trustManagerAlgorithm;
-    }
-
-    String getProtocol() {
-        return protocol;
-    }
-
-    String getTrustStoreType() {
-        return trustStoreType;
-    }
-
-    String getTrustStoreLocation() {
-        return trustStoreLocation;
-    }
-
-    String getTrustStorePassword() {
-        return trustStorePassword;
-    }
-
-    String getKeyStoreType() {
-        return keyStoreType;
-    }
-
-    String getKeyStoreLocation() {
-        return keyStoreLocation;
-    }
-
-    String getKeyStorePassword() {
-        return keyStorePassword;
-    }
-
-    String getKeyManagerAlgorithm() {
-        return keyManagerAlgorithm;
-    }
-
-    String getTrustManagerAlgorithm() {
-        return trustManagerAlgorithm;
     }
 }
