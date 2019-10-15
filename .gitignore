@@ -25,8 +25,9 @@ hs_err_pid*
 # IntelliJ IDEA folder
 .idea
 
-# Test Consumer directory
+# Test Consumer directory and integration test directory
 src/main/java/org/wso2/carbon/esb/connector/test/
+src/test/
 
 # Target directory
 target
