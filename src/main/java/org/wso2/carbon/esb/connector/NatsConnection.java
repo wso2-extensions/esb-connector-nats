@@ -11,13 +11,7 @@
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  his is a gentle reminder about the session planned for tomorrow for the students who are interested in transferring to the UoW, UK for further education, during or after their degree at IIT.
-
-The session will be conducted in OLB (ground floor) from 10 AM till 11 AM on 14 October 2019 (Monday) by Ms.Gariema Sharma, an official from the University of Westminster who is on an official visit to IIT.
-
-All interested students are invited to attend, without registration.
-
-Best Regards,See the License for the
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
