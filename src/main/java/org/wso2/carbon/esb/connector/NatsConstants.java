@@ -18,6 +18,9 @@
 package org.wso2.carbon.esb.connector;
 
 class NatsConstants {
+
+    private NatsConstants() {}
+
     // Configuration properties for sendMessage operation
     static final String SUBJECT = "subject";
     static final String GET_RESPONSE = "getResponse";
