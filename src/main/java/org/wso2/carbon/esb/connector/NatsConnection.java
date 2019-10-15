@@ -130,7 +130,7 @@ class NatsConnection {
         }
 
         if (StringUtils.isNotEmpty(tlsProtocol + tlsTrustStoreType + tlsTrustStoreLocation + tlsTrustStorePassword + tlsKeyStoreType + tlsKeyStoreLocation + tlsKeyStorePassword + tlsKeyManagerAlgorithm + tlsTrustManagerAlgorithm)) {
-            SSLContext sslContext = createSSLContext(tlsProtocol, tlsTrustStoreType, tlsTrustStoreLocation, tlsTrustStorePassword, tlsKeyStoreType, tlsKeyStoreLocation, tlsKeyStorePassword, tlsKeyManagerAlgorithm, tlsTrustManagerAlgorithm);
+            SSLContext sslContext = createSSLContext(new TLSConnection(tlsProtocol, tlsTrustStoreType, tlsTrustStoreLocation, tlsTrustStorePassword, tlsKeyStoreType, tlsKeyStoreLocation, tlsKeyStorePassword, tlsKeyManagerAlgorithm, tlsTrustManagerAlgorithm));
             if (sslContext != null) {
                 builder.sslContext(sslContext);
             }
@@ -155,29 +155,21 @@ class NatsConnection {
     /**
      * Create the SSLContext to establish connection with TLS.
      *
-     * @param protocol the TLS protocol.
-     * @param trustStoreType the type of trust store file.
-     * @param trustStoreLocation the location of trust store file.
-     * @param trustStorePassword the password of trust store file.
-     * @param keyStoreType the type of key store file.
-     * @param keyStoreLocation the location of key store file.
-     * @param keyStorePassword the password of key store file.
-     * @param keyManagerAlgorithm the TLS algorithm for the KeyManagerFactory.
-     * @param trustManagerAlgorithm the TLS algorithm for the TrustManagerFactory.
+     * @param tlsConnection the TLS connection object.
      * @return the SSLContext or null if any exceptions.
      */
-    private static SSLContext createSSLContext(String protocol, String trustStoreType, String trustStoreLocation, String trustStorePassword, String keyStoreType, String keyStoreLocation, String keyStorePassword, String keyManagerAlgorithm, String trustManagerAlgorithm) {
+    private static SSLContext createSSLContext(TLSConnection tlsConnection) {
         Log log = LogFactory.getLog(NatsConnection.class);
         try {
-            KeyStore keyStore = loadKeyStore(keyStoreType, keyStoreLocation, trustStorePassword);
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(keyManagerAlgorithm.equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : keyManagerAlgorithm);
-            keyManagerFactory.init(keyStore, keyStorePassword.toCharArray());
+            KeyStore keyStore = loadKeyStore(tlsConnection.getKeyStoreType(), tlsConnection.getKeyStoreLocation(), tlsConnection.getTrustStorePassword());
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(tlsConnection.getKeyManagerAlgorithm().equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : tlsConnection.getKeyManagerAlgorithm());
+            keyManagerFactory.init(keyStore, tlsConnection.getKeyStorePassword().toCharArray());
 
-            KeyStore trustStore = loadKeyStore(trustStoreType, trustStoreLocation, trustStorePassword);
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(trustManagerAlgorithm.equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : trustManagerAlgorithm);
+            KeyStore trustStore = loadKeyStore(tlsConnection.getTrustStoreType(), tlsConnection.getTrustStoreLocation(), tlsConnection.getTrustStorePassword());
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(tlsConnection.getTrustManagerAlgorithm().equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : tlsConnection.getTrustManagerAlgorithm());
             trustManagerFactory.init(trustStore);
 
-            SSLContext sslContext = SSLContext.getInstance(protocol.equals("") ? Options.DEFAULT_SSL_PROTOCOL : protocol);
+            SSLContext sslContext = SSLContext.getInstance(tlsConnection.getProtocol().equals("") ? Options.DEFAULT_SSL_PROTOCOL : tlsConnection.getProtocol());
             sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
             return sslContext;
         } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | UnrecoverableKeyException | KeyManagementException e) {
@@ -200,5 +192,68 @@ class NatsConnection {
             store.load(in, trustStorePassword.toCharArray());
         }
         return store;
+    }
+}
+
+/**
+ * Set the TLS connection properties to connect to the server with TLS.
+ */
+class TLSConnection {
+    private String protocol;
+    private String trustStoreType;
+    private String trustStoreLocation;
+    private String trustStorePassword;
+    private String keyStoreType;
+    private String keyStoreLocation;
+    private String keyStorePassword;
+    private String keyManagerAlgorithm;
+    private String trustManagerAlgorithm;
+
+    TLSConnection(String protocol, String trustStoreType, String trustStoreLocation, String trustStorePassword, String keyStoreType, String keyStoreLocation, String keyStorePassword, String keyManagerAlgorithm, String trustManagerAlgorithm) {
+        this.protocol = protocol;
+        this.trustStoreType = trustStoreType;
+        this.trustStoreLocation = trustStoreLocation;
+        this.trustStorePassword = trustStorePassword;
+        this.keyStoreType = keyStoreType;
+        this.keyStoreLocation = keyStoreLocation;
+        this.keyStorePassword = keyStorePassword;
+        this.keyManagerAlgorithm = keyManagerAlgorithm;
+        this.trustManagerAlgorithm = trustManagerAlgorithm;
+    }
+
+    String getProtocol() {
+        return protocol;
+    }
+
+    String getTrustStoreType() {
+        return trustStoreType;
+    }
+
+    String getTrustStoreLocation() {
+        return trustStoreLocation;
+    }
+
+    String getTrustStorePassword() {
+        return trustStorePassword;
+    }
+
+    String getKeyStoreType() {
+        return keyStoreType;
+    }
+
+    String getKeyStoreLocation() {
+        return keyStoreLocation;
+    }
+
+    String getKeyStorePassword() {
+        return keyStorePassword;
+    }
+
+    String getKeyManagerAlgorithm() {
+        return keyManagerAlgorithm;
+    }
+
+    String getTrustManagerAlgorithm() {
+        return trustManagerAlgorithm;
     }
 }
