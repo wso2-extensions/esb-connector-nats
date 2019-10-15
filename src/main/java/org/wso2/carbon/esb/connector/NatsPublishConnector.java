@@ -19,7 +19,9 @@ package org.wso2.carbon.esb.connector;
 
 import com.google.gson.GsonBuilder;
 
-import io.nats.client.*;
+import io.nats.client.Connection;
+import io.nats.client.Dispatcher;
+import io.nats.client.NUID;
 
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axis2.AxisFault;
@@ -50,17 +52,11 @@ public class NatsPublishConnector extends AbstractConnector {
 
     private static Log log = LogFactory.getLog(NatsPublishConnector.class);
 
-    @Override
-    public void connect(MessageContext messageContext) {
-        // Get the subject
-        String subject = lookupTemplateParameter(messageContext, NatsConstants.SUBJECT);
-        String message = null;
+    @Override public void connect(MessageContext messageContext) {
         try {
-            message = getMessage(messageContext);
-        } catch (AxisFault e) {
-            log.error(null, e);
-        }
-        try {
+            // Get the subject
+            String subject = lookupTemplateParameter(messageContext, NatsConstants.SUBJECT);
+            String message = getMessage(messageContext);
             NatsConnectionPool connectionPool = NatsConnectionPool.getNatsConnectionPoolInstance();
             // Send the message on the subject with or without response based on if the getResponse parameter is set to true.
             if (isResponseTrue(lookupTemplateParameter(messageContext, NatsConstants.GET_RESPONSE))) {
@@ -68,20 +64,23 @@ public class NatsPublishConnector extends AbstractConnector {
             } else {
                 sendMessage(subject, message, messageContext, connectionPool);
             }
-        } catch (IOException | InterruptedException e) {
-            log.error(null, e);
+        } catch (AxisFault | InterruptedException e) {
+            log.error("An error occurred while sending the message.", e);
+        } catch (IOException e) {
+            log.error("An error while connecting to NATS server.", e);
         }
     }
 
     /**
      * Send the message and wait for the response.
      *
-     * @param subject the subject to publish the message.
-     * @param message the message to publish.
+     * @param subject        the subject to publish the message.
+     * @param message        the message to publish.
      * @param messageContext the message context.
      * @param connectionPool the NatsConnectionPool instance to get a connection from the pool if available.
      */
-    private void sendMessageWithReply(String subject, String message, MessageContext messageContext, NatsConnectionPool connectionPool) throws IOException, InterruptedException {
+    private void sendMessageWithReply(String subject, String message, MessageContext messageContext,
+            NatsConnectionPool connectionPool) throws IOException, InterruptedException {
         connectionPool.createConnectionForPool(messageContext);
         Connection publisher = connectionPool.getConnectionFromPool();
         publisher = (publisher == null) ? connectionPool.getConnectionFromPool() : publisher;
@@ -101,8 +100,8 @@ public class NatsPublishConnector extends AbstractConnector {
     /**
      * Send the message (fire and forget).
      *
-     * @param subject The subject to publish the message.
-     * @param message The message to publish.
+     * @param subject        The subject to publish the message.
+     * @param message        The message to publish.
      * @param messageContext The message context.
      * @param connectionPool The NatsConnectionPool instance to get a connection from the pool if available.
      */
@@ -141,7 +140,7 @@ public class NatsPublishConnector extends AbstractConnector {
      * Read the value from the input parameter.
      *
      * @param messageContext the message context.
-     * @param paramName the parameter name
+     * @param paramName      the parameter name
      * @return parameter value converted to string.
      */
     private static String lookupTemplateParameter(MessageContext messageContext, String paramName) {
@@ -177,7 +176,7 @@ public class NatsPublishConnector extends AbstractConnector {
      * Generate the dynamic parameters from message context parameter.
      *
      * @param messageContext The message context
-     * @param subject the subject to generate the dynamic parameters.
+     * @param subject        the subject to generate the dynamic parameters.
      * @return extract the values from properties and return a Map of keys and values.
      */
     private Map<String, String> getDynamicParameters(MessageContext messageContext, String subject) {
@@ -210,7 +209,7 @@ public class NatsPublishConnector extends AbstractConnector {
  */
 class NatsMessage {
     private String payload;
-    private Map<String,String> headers;
+    private Map<String, String> headers;
 
     NatsMessage(String payload, Map<String, String> headers) {
         this.payload = payload;
