@@ -87,7 +87,7 @@ public class NatsConfigConnector extends AbstractConnector {
      */
     private String validateMaxPoolSize(String maxPoolSize) {
         try {
-            if (!(maxPoolSize != null && (Integer.parseInt(maxPoolSize) > 1))) {
+            if (Integer.parseInt(maxPoolSize) < 1) {
                 maxPoolSize = NatsConstants.DEFAULT_CONNECTION_POOL_SIZE;
             }
         } catch (NumberFormatException e) {

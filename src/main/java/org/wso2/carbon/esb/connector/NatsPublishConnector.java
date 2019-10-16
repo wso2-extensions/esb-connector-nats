@@ -79,11 +79,8 @@ public class NatsPublishConnector extends AbstractConnector {
      * @param messageContext the message context.
      * @param connectionPool the NatsConnectionPool instance to get a connection from the pool if available.
      */
-    private void sendMessageWithReply(String subject, String message, MessageContext messageContext,
-            NatsConnectionPool connectionPool) throws IOException, InterruptedException {
-        connectionPool.createConnectionForPool(messageContext);
-        Connection publisher = connectionPool.getConnectionFromPool();
-        publisher = (publisher == null) ? connectionPool.getConnectionFromPool() : publisher;
+    private void sendMessageWithReply(String subject, String message, MessageContext messageContext, NatsConnectionPool connectionPool) throws IOException, InterruptedException {
+        Connection publisher = getConnectionFromConnectionPool(connectionPool, messageContext);
         String replySubject = NUID.nextGlobal();
         CountDownLatch latch = new CountDownLatch(1);
         Dispatcher dispatcher = publisher.createDispatcher((msg) -> {
@@ -106,12 +103,23 @@ public class NatsPublishConnector extends AbstractConnector {
      * @param connectionPool The NatsConnectionPool instance to get a connection from the pool if available.
      */
     private void sendMessage(String subject, String message, MessageContext messageContext, NatsConnectionPool connectionPool) throws IOException, InterruptedException {
-        connectionPool.createConnectionForPool(messageContext);
-        Connection publisher = connectionPool.getConnectionFromPool();
-        publisher = (publisher == null) ? connectionPool.getConnectionFromPool() : publisher;
+        Connection publisher = getConnectionFromConnectionPool(connectionPool, messageContext);
         publisher.publish(subject, natsMessageWithHeaders(new NatsMessage(message, getDynamicParameters(messageContext, subject))).getBytes(StandardCharsets.UTF_8));
         connectionPool.putConnectionBackToPool(publisher);
         log.info("Message Sent: " + message);
+    }
+
+    /**
+     * Get a connection from the connection pool.
+     *
+     * @param messageContext The message context.
+     * @param connectionPool The NatsConnectionPool instance.
+     * @return a connection from the connection pool
+     */
+    private Connection getConnectionFromConnectionPool(NatsConnectionPool connectionPool, MessageContext messageContext) throws IOException, InterruptedException {
+        connectionPool.createConnectionForPool(messageContext);
+        Connection publisher = connectionPool.getConnectionFromPool();
+        return (publisher == null) ? connectionPool.getConnectionFromPool() : publisher;
     }
 
     /**
