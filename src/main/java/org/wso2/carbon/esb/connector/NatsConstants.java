@@ -62,6 +62,7 @@ class NatsConstants {
     static final String MAX_CONNECTION_POOL_SIZE = "nats.maxPoolSize";
 
     // Default values
+    static final String DEFAULT_NATS_SERVER_URL = "nats://localhost:4222";
     static final String DEFAULT_CONNECTION_POOL_SIZE = "5";
     static final String DEFAULT_TLS_ALGORITHM = "SunX509";
     static final String DEFAULT_STORE_TYPE = "JKS";
