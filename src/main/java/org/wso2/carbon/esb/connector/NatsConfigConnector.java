@@ -27,6 +27,7 @@ public class NatsConfigConnector extends AbstractConnector {
 
     @Override
     public void connect(MessageContext messageContext) {
+        String servers = (String) messageContext.getProperty(NatsConstants.SERVERS);
         // Setting null for these parameters will result in NullPointerException
         String username = validateParameter((String) messageContext.getProperty(NatsConstants.USERNAME));
         String password = validateParameter((String) messageContext.getProperty(NatsConstants.PASSWORD));
@@ -48,6 +49,7 @@ public class NatsConfigConnector extends AbstractConnector {
         String noEcho = validateParameter((String) messageContext.getProperty(NatsConstants.NO_ECHO));
         String maxPoolSize = validateMaxPoolSize((String) messageContext.getProperty(NatsConstants.MAX_CONNECTION_POOL_SIZE));
 
+        messageContext.setProperty(NatsConstants.SERVERS, servers == null ? NatsConstants.DEFAULT_NATS_SERVER_URL : servers);
         messageContext.setProperty(NatsConstants.USERNAME, username);
         messageContext.setProperty(NatsConstants.PASSWORD, password);
         messageContext.setProperty(NatsConstants.TLS_PROTOCOL, tlsProtocol);
