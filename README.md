@@ -1,5 +1,5 @@
 # EI NATS Connector
-[NATS](nats.io) is a distributed messaging platform based on the publish-subscribe messaging model
+[NATS](https://nats.io/) is a distributed messaging platform based on the publish-subscribe messaging model
 where publishers publish messages on a paticular subject and consumers listening on that 
 subject can consume these messages. For more information, see the [NATS documentation.](https://nats-io.github.io/docs/)
 
