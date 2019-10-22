@@ -1,9 +1,7 @@
 # EI NATS Connector
-An EI Connector for NATS(nats.io) messaging platform.
-
-NATS is a distributed messaging platform based on the publish-subscribe messaging model
+[NATS](nats.io) is a distributed messaging platform based on the publish-subscribe messaging model
 where publishers publish messages on a paticular subject and consumers listening on that 
-subject can consume these messages.
+subject can consume these messages. For more information, see the [NATS documentation.](https://nats-io.github.io/docs/)
 
 The NATS connector allows you to access the NATS API through WSO2 EI and acts as a message 
 publisher that facilitates message publishing. 
