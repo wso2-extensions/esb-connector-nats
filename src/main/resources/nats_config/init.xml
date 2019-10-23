@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+   WSO2 Inc. licenses this file to you under the Apache License,
+   Version 2.0 (the "License"); you may not use this file except
+   in compliance with the License.
+   You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied. See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<template name="init" onError="fault" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="servers" description="The format is nats://host1:port1,nats://host2:port2"/>
+    <parameter name="username" description="Username for authentication."/>
+    <parameter name="password" description="Password for authentication."/>
+    <parameter name="tlsProtocol" description="The TLS protocol used to generate the SSLContext."/>
+    <parameter name="tlsKeyStoreType" description="The format of the key store file."/>
+    <parameter name="tlsKeyStoreLocation" description="The location of the key store file."/>
+    <parameter name="tlsKeyStorePassword" description="The password for the key store file."/>
+    <parameter name="tlsTrustStoreType" description="The format of the trust store file."/>
+    <parameter name="tlsTrustStoreLocation" description="The location of the trust store file."/>
+    <parameter name="tlsTrustStorePassword" description="The password for the trust store file."/>
+    <parameter name="tlsKeyManagerAlgorithm" description="The TLS algorithm for the key manager factory."/>
+    <parameter name="tlsTrustManagerAlgorithm" description="The TLS algorithm for the trust manager factory."/>
+    <parameter name="bufferSize" description="Initial size in bytes for connections."/>
+    <parameter name="connectionName" description="Name for the connection."/>
+    <parameter name="connectionTimeout" description="The connection timeout for connection attempts for each server."/>
+    <parameter name="inboxPrefix" description="Inbox prefix to manage authorization of subjects."/>
+    <parameter name="dataPortType" description="The class to use for the connections data port."/>
+    <parameter name="maxControlLine" description="The maximum length of a control line sent by this connection."/>
+    <parameter name="maxPingsOut" description="Maximum number of pings the client can have in flight."/>
+    <parameter name="maxReconnects" description="Maximum number of reconnect attempts. Use 0 to turn off auto-reconnect and -1 to turn on infinite reconnects."/>
+    <parameter name="pingInterval" description="The interval between attempts to ping the server."/>
+    <parameter name="reconnectBufferSize" description="Maximum number of bytes to buffer in the client when trying to reconnect."/>
+    <parameter name="reconnectWait" description="Time to wait between reconnect attempts to the same server."/>
+    <parameter name="requestCleanUpInterval" description="The interval between cleaning passes on outstanding request futures that are cancelled or timeout in the application code."/>
+    <parameter name="verbose" description="Turn on verbose mode with the server."/>
+    <parameter name="pedantic" description="Turn on pedantic mode with the server."/>
+    <parameter name="supportUTF8Subjects" description="Enable UTF8 subjects"/>
+    <parameter name="turnOnAdvancedStats" description="Enable advanced stats."/>
+    <parameter name="traceConnection" description="Enable connection trace messages."/>
+    <parameter name="useOldRequestStyle" description="Turn on the old request style that uses a new inbox and subscriber for each request."/>
+    <parameter name="noRandomize" description="Turn off server pool randomization. The server goes in the order they were configured or provided by a server in a cluster update."/>
+    <parameter name="noEcho" description="This flag will prevent the server from echoing messages back to the connection if it has subscriptions on the subject being published to."/>
+    <parameter name="maxPoolSize" description="Maximum size of the connection pool."/>
+    <sequence>
+        <property expression="$func:servers" name="nats.servers" scope="operation" type="STRING"/>
+        <property expression="$func:username" name="nats.username"/>
+        <property expression="$func:password" name="nats.password"/>
+        <property expression="$func:tlsProtocol" name="nats.tlsProtocol"/>
+        <property expression="$func:tlsKeyStoreType" name="nats.tlsKeyStoreType"/>
+        <property expression="$func:tlsKeyStoreLocation" name="nats.tlsKeyStoreLocation"/>
+        <property expression="$func:tlsKeyStorePassword" name="nats.tlsKeyStorePassword"/>
+        <property expression="$func:tlsTrustStoreType" name="nats.tlsTrustStoreType"/>
+        <property expression="$func:tlsTrustStoreLocation" name="nats.tlsTrustStoreLocation"/>
+        <property expression="$func:tlsTrustStorePassword" name="nats.tlsTrustStorePassword"/>
+        <property expression="$func:tlsKeyManagerAlgorithm" name="nats.tlsKeyManagerAlgorithm"/>
+        <property expression="$func:tlsTrustManagerAlgorithm" name="nats.tlsTrustManagerAlgorithm"/>
+        <property expression="$func:bufferSize" name="nats.bufferSize"/>
+        <property expression="$func:connectionName" name="nats.connectionName"/>
+        <property expression="$func:connectionTimeout" name="nats.connectionTimeout"/>
+        <property expression="$func:inboxPrefix" name="nats.inboxPrefix"/>
+        <property expression="$func:dataPortType" name="nats.dataPortType"/>
+        <property expression="$func:maxControlLine" name="nats.maxControlLine"/>
+        <property expression="$func:maxPingsOut" name="nats.maxPingsOut"/>
+        <property expression="$func:maxReconnects" name="nats.maxReconnects"/>
+        <property expression="$func:pingInterval" name="nats.pingInterval"/>
+        <property expression="$func:reconnectBufferSize" name="nats.reconnectBufferSize"/>
+        <property expression="$func:reconnectWait" name="nats.reconnectWait"/>
+        <property expression="$func:requestCleanUpInterval" name="nats.requestCleanUpInterval"/>
+        <property expression="$func:verbose" name="nats.verbose"/>
+        <property expression="$func:pedantic" name="nats.pedantic"/>
+        <property expression="$func:supportUTF8Subjects" name="nats.supportUTF8Subjects"/>
+        <property expression="$func:turnOnAdvancedStats" name="nats.turnOnAdvancedStats"/>
+        <property expression="$func:traceConnection" name="nats.traceConnection"/>
+        <property expression="$func:useOldRequestStyle" name="nats.useOldRequestStyle"/>
+        <property expression="$func:noRandomize" name="nats.noRandomize"/>
+        <property expression="$func:noEcho" name="nats.noEcho"/>
+        <property expression="$func:maxPoolSize" name="nats.maxPoolSize"/>
+        <class name="org.wso2.carbon.esb.connector.NatsConfigConnector"/>
+    </sequence>
+</template>
