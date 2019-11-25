@@ -67,7 +67,7 @@ public class NatsPublishConnector extends AbstractConnector {
         } catch (AxisFault | InterruptedException e) {
             log.error("An error occurred while sending the message.", e);
         } catch (IOException e) {
-            log.error("An error while connecting to NATS server.", e);
+            log.error("An error occurred while connecting to NATS server.", e);
         }
     }
 
