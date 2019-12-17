@@ -48,7 +48,7 @@ class NatsConnectionPool {
         // If there are no connections in the pool to be used and maximum pool size has not been reached, a connection will be created and added to the pool.
         if (!isConnectionPoolFull(messageContext) && connectionPool.size() == 0) {
             connectionPool.add(new NatsConnection().createConnection(messageContext));
-            log.info("Connection added to connection pool.");
+            printDebugLog("Connection added to connection pool.");
         }
     }
 
