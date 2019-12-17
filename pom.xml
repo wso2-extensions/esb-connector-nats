@@ -46,6 +46,7 @@
         <httpcomponents.version>4.3.6</httpcomponents.version>
         <org.json.version>20080701</org.json.version>
         <nats.version>2.6.0</nats.version>
+        <nats.streaming.version>2.2.3</nats.streaming.version>
         <skip-tests>true</skip-tests>
     </properties>
 
@@ -201,6 +202,11 @@
             <groupId>io.nats</groupId>
             <artifactId>jnats</artifactId>
             <version>${nats.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.nats</groupId>
+            <artifactId>java-nats-streaming</artifactId>
+            <version>${nats.streaming.version}</version>
         </dependency>
     </dependencies>
     <build>

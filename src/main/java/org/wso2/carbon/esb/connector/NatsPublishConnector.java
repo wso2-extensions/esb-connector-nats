@@ -59,7 +59,7 @@ public class NatsPublishConnector extends AbstractConnector {
             String message = getMessage(messageContext);
             NatsConnectionPool connectionPool = NatsConnectionPool.getNatsConnectionPoolInstance();
             // Send the message on the subject with or without response based on if the getResponse parameter is set to true.
-            if (isResponseTrue(lookupTemplateParameter(messageContext, NatsConstants.GET_RESPONSE))) {
+            if (isReplyTrue(lookupTemplateParameter(messageContext, NatsConstants.GET_REPLY))) {
                 sendMessageWithReply(subject, message, messageContext, connectionPool);
             } else {
                 sendMessage(subject, message, messageContext, connectionPool);
@@ -83,8 +83,8 @@ public class NatsPublishConnector extends AbstractConnector {
         Connection publisher = getConnectionFromConnectionPool(connectionPool, messageContext);
         String replySubject = NUID.nextGlobal();
         CountDownLatch latch = new CountDownLatch(1);
-        Dispatcher dispatcher = publisher.createDispatcher((msg) -> {
-            log.info("Message Sent: " + message + "Acknowledgment: " + new String(msg.getData(), StandardCharsets.UTF_8) + "\n");
+        Dispatcher dispatcher = publisher.createDispatcher((natsMessage) -> {
+            printDebugLog("Message Sent: " + message + ", Acknowledgment: " + new String(natsMessage.getData(), StandardCharsets.UTF_8) + "\n");
             latch.countDown();
         });
         dispatcher.subscribe(replySubject);
@@ -106,7 +106,7 @@ public class NatsPublishConnector extends AbstractConnector {
         Connection publisher = getConnectionFromConnectionPool(connectionPool, messageContext);
         publisher.publish(subject, natsMessageWithHeaders(new NatsMessage(message, getDynamicParameters(messageContext, subject))).getBytes(StandardCharsets.UTF_8));
         connectionPool.putConnectionBackToPool(publisher);
-        log.info("Message Sent: " + message);
+        printDebugLog("Message Sent: " + message);
     }
 
     /**
@@ -125,11 +125,11 @@ public class NatsPublishConnector extends AbstractConnector {
     /**
      * Check if getResponse parameter is true.
      *
-     * @param responseParam The getResponse parameter value.
+     * @param replyParam The getResponse parameter value.
      * @return true or false.
      */
-    private boolean isResponseTrue(String responseParam) {
-        return Boolean.parseBoolean(responseParam);
+    private boolean isReplyTrue(String replyParam) {
+        return Boolean.parseBoolean(replyParam);
     }
 
     /**
@@ -209,6 +209,17 @@ public class NatsPublishConnector extends AbstractConnector {
      */
     private static String natsMessageWithHeaders(NatsMessage message) {
         return new GsonBuilder().create().toJson(message);
+    }
+
+    /**
+     * Check if debug is enabled for logging.
+     *
+     * @param text log text
+     */
+    private void printDebugLog(String text) {
+        if (log.isDebugEnabled()) {
+            log.debug(text);
+        }
     }
 }
 

@@ -125,7 +125,6 @@ class NatsConnection {
 
         if (Boolean.parseBoolean(traceConnection)) {
             builder.traceConnection();
-
         }
 
         if (StringUtils.isNotEmpty(tlsProtocol + tlsTrustStoreType + tlsTrustStoreLocation + tlsTrustStorePassword + tlsKeyStoreType + tlsKeyStoreLocation + tlsKeyStorePassword + tlsKeyManagerAlgorithm + tlsTrustManagerAlgorithm)) {

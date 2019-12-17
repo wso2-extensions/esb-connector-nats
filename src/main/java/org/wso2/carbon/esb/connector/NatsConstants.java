@@ -23,7 +23,7 @@ class NatsConstants {
 
     // Configuration properties for sendMessage operation
     static final String SUBJECT = "subject";
-    static final String GET_RESPONSE = "getResponse";
+    static final String GET_REPLY = "getReply";
     static final String METHOD_NAME = "sendMessage:";
 
     // Configuration properties for init operation

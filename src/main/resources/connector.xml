@@ -22,5 +22,4 @@
         <dependency component="nats_send_message" />
         <description>WSO2 NATS connector library</description>
     </component>
-    <icon>icon/icon-small.gif</icon>
 </connector>
