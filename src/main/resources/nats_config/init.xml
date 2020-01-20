@@ -84,6 +84,6 @@
         <property expression="$func:noRandomize" name="nats.noRandomize"/>
         <property expression="$func:noEcho" name="nats.noEcho"/>
         <property expression="$func:maxPoolSize" name="nats.maxPoolSize"/>
-        <class name="org.wso2.carbon.esb.connector.NatsConfigConnector"/>
+        <class name="org.wso2.carbon.esb.connector.nats_core.NatsConfigConnector"/>
     </sequence>
 </template>

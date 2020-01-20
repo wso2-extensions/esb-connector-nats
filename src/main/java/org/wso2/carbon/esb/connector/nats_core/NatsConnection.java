@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.esb.connector;
+package org.wso2.carbon.esb.connector.nats_core;
 
 import io.nats.client.Connection;
 import io.nats.client.Nats;
@@ -44,7 +44,7 @@ import java.util.Properties;
 /**
  * The NATS publisher connection
  */
-class NatsConnection {
+public class NatsConnection {
 
     /**
      * Create a new connection to the NATS server.
@@ -159,16 +159,19 @@ class NatsConnection {
     private static SSLContext createSSLContext(TLSConnection tlsConnection) {
         Log log = LogFactory.getLog(NatsConnection.class);
         try {
-            KeyStore keyStore = loadKeyStore(tlsConnection.getKeyStoreType(), tlsConnection.getKeyStoreLocation(), tlsConnection.getTrustStorePassword());
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(tlsConnection.getKeyManagerAlgorithm().equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : tlsConnection.getKeyManagerAlgorithm());
-            keyManagerFactory.init(keyStore, tlsConnection.getKeyStorePassword().toCharArray());
+            KeyManagerFactory keyManagerFactory = null;
+            if (StringUtils.isEmpty(tlsConnection.getKeyStoreLocation())) {
+                KeyStore keyStore = loadKeyStore(tlsConnection.getKeyStoreType(), tlsConnection.getKeyStoreLocation(), tlsConnection.getTrustStorePassword());
+                keyManagerFactory = KeyManagerFactory.getInstance(tlsConnection.getKeyManagerAlgorithm().equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : tlsConnection.getKeyManagerAlgorithm());
+                keyManagerFactory.init(keyStore, tlsConnection.getKeyStorePassword().toCharArray());
+            }
 
             KeyStore trustStore = loadKeyStore(tlsConnection.getTrustStoreType(), tlsConnection.getTrustStoreLocation(), tlsConnection.getTrustStorePassword());
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(tlsConnection.getTrustManagerAlgorithm().equals("") ? NatsConstants.DEFAULT_TLS_ALGORITHM : tlsConnection.getTrustManagerAlgorithm());
             trustManagerFactory.init(trustStore);
 
             SSLContext sslContext = SSLContext.getInstance(tlsConnection.getProtocol().equals("") ? Options.DEFAULT_SSL_PROTOCOL : tlsConnection.getProtocol());
-            sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
+            sslContext.init(keyManagerFactory == null ? null : keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new SecureRandom());
             return sslContext;
         } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException | UnrecoverableKeyException | KeyManagementException e) {
             log.error("Invalid TLS parameters. Establishing connection without TLS if possible.", e);

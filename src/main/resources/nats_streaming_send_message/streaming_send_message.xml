@@ -15,10 +15,9 @@
    specific language governing permissions and limitations
    under the License.
 -->
-<template xmlns="http://ws.apache.org/ns/synapse" name="sendMessage">
-	<parameter name="subject" description="Subject of the message to publish to"/>
-	<parameter name="getResponse" description="Send the message with or without a response"/>
+<template xmlns="http://ws.apache.org/ns/synapse" name="streamingSendMessage">
+	<parameter name="subject" description="Subject/Channel of the message to publish to"/>
 	<sequence>
-		<class name="org.wso2.carbon.esb.connector.nats_core.NatsPublishConnector" />
+		<class name="org.wso2.carbon.esb.connector.nats_streaming.NatsStreamingPublishConnector" />
 	</sequence>
 </template>

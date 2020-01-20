@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
    Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 
@@ -15,10 +16,11 @@
    specific language governing permissions and limitations
    under the License.
 -->
-<template xmlns="http://ws.apache.org/ns/synapse" name="sendMessage">
-	<parameter name="subject" description="Subject of the message to publish to"/>
-	<parameter name="getResponse" description="Send the message with or without a response"/>
-	<sequence>
-		<class name="org.wso2.carbon.esb.connector.nats_core.NatsPublishConnector" />
-	</sequence>
-</template>
+<component name="nats_streaming_send_message" type="synapse/template">
+	<subComponents>
+		<component name="streamingSendMessage">
+			<file>streaming_send_message.xml</file>
+			<description>Send message to NATS Streaming brokers</description>
+		</component>
+	</subComponents>
+</component>
