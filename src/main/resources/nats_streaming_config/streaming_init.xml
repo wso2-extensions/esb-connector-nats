@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+
+   WSO2 Inc. licenses this file to you under the Apache License,
+   Version 2.0 (the "License"); you may not use this file except
+   in compliance with the License.
+   You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied. See the License for the
+   specific language governing permissions and limitations
+   under the License.
+-->
+<template name="streamingInit" onError="fault" xmlns="http://ws.apache.org/ns/synapse">
+    <parameter name="url" description="The format is nats://host1:port1."/>
+    <parameter name="clientId" description="Unique ID of the publisher."/>
+    <parameter name="clusterId" description="ID of the cluster to connect to."/>
+    <parameter name="useCoreNatsConnection" description=""/>
+    <parameter name="natsUrl" description=""/>
+    <parameter name="username" description="Username for authentication."/>
+    <parameter name="password" description="Password for authentication."/>
+    <parameter name="tlsProtocol" description="The TLS protocol used to generate the SSLContext."/>
+    <parameter name="tlsKeyStoreType" description="The format of the key store file."/>
+    <parameter name="tlsKeyStoreLocation" description="The location of the key store file."/>
+    <parameter name="tlsKeyStorePassword" description="The password for the key store file."/>
+    <parameter name="tlsTrustStoreType" description="The format of the trust store file."/>
+    <parameter name="tlsTrustStoreLocation" description="The location of the trust store file."/>
+    <parameter name="tlsTrustStorePassword" description="The password for the trust store file."/>
+    <parameter name="tlsKeyManagerAlgorithm" description="The TLS algorithm for the key manager factory."/>
+    <parameter name="tlsTrustManagerAlgorithm" description="The TLS algorithm for the trust manager factory."/>
+    <parameter name="maxPubAcksInFlight" description=""/>
+    <parameter name="pubAckWait" description=""/>
+    <parameter name="connectWait" description=""/>
+    <parameter name="discoverPrefix" description=""/>
+    <parameter name="maxPingsOut" description=""/>
+    <parameter name="pingInterval" description=""/>
+    <parameter name="traceConnection" description=""/>
+    <parameter name="maxPoolSize" description="Maximum size of the connection pool."/>
+    <sequence>
+        <property expression="$func:url" name="nats.streaming.url" scope="operation" type="STRING"/>
+        <property expression="$func:clientId" name="nats.streaming.clientId"/>
+        <property expression="$func:clusterId" name="nats.streaming.clusterId"/>
+        <property expression="$func:useCoreNatsConnection" name="use.core.nats.connection"/>
+        <property expression="$func:natsUrl" name="nats.core.url"/>
+        <property expression="$func:username" name="nats.core.username"/>
+        <property expression="$func:password" name="nats.core.password"/>
+        <property expression="$func:tlsProtocol" name="nats.core.tlsProtocol"/>
+        <property expression="$func:tlsKeyStoreType" name="nats.core.tlsKeyStoreType"/>
+        <property expression="$func:tlsKeyStoreLocation" name="nats.core.tlsKeyStoreLocation"/>
+        <property expression="$func:tlsKeyStorePassword" name="nats.core.tlsKeyStorePassword"/>
+        <property expression="$func:tlsTrustStoreType" name="nats.core.tlsTrustStoreType"/>
+        <property expression="$func:tlsTrustStoreLocation" name="nats.core.tlsTrustStoreLocation"/>
+        <property expression="$func:tlsTrustStorePassword" name="nats.core.tlsTrustStorePassword"/>
+        <property expression="$func:tlsKeyManagerAlgorithm" name="nats.core.tlsKeyManagerAlgorithm"/>
+        <property expression="$func:tlsTrustManagerAlgorithm" name="nats.core.tlsTrustManagerAlgorithm"/>
+        <property expression="$func:maxPubAcksInFlight" name="nats.streaming.maxPubAcksInFlight"/>
+        <property expression="$func:pubAckWait" name="nats.streaming.pubAckWait"/>
+        <property expression="$func:connectWait" name="nats.streaming.connectWait"/>
+        <property expression="$func:discoverPrefix" name="nats.streaming.discoverPrefix"/>
+        <property expression="$func:maxPingsOut" name="nats.streaming.maxPingsOut"/>
+        <property expression="$func:pingInterval" name="nats.streaming.pingInterval"/>
+        <property expression="$func:traceConnection" name="nats.streaming.traceConnection"/>
+        <property expression="$func:maxPoolSize" name="nats.streaming.maxPoolSize"/>
+        <class name="org.wso2.carbon.esb.connector.nats_streaming.NatsStreamingConfigConnector"/>
+    </sequence>
+</template>

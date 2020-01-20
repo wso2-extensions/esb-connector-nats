@@ -20,6 +20,8 @@
     <component name="Nats" package="org.wso2.carbon.esb.connector" >
         <dependency component="nats_config" />
         <dependency component="nats_send_message" />
+        <dependency component="nats_streaming_config" />
+        <dependency component="nats_streaming_send_message" />
         <description>WSO2 NATS connector library</description>
     </component>
 </connector>
