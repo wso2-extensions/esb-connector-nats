@@ -47,7 +47,7 @@ import java.util.Properties;
 class NatsStreamingConnection {
 
     /**
-     * Create a new connection to the NATS server.
+     * Create a new NATS Streaming connection to the NATS server.
      *
      * @param messageContext the message context.
      * @return the publisher connection.
@@ -103,6 +103,12 @@ class NatsStreamingConnection {
         return streamingConnectionFactory.createConnection();
     }
 
+    /**
+     * Create a Core NATS connection to be used with NATS Streaming.
+     *
+     * @param messageContext the message context.
+     * @return the Core NATS connection.
+     */
     private Connection createNatsConnection(MessageContext messageContext) throws IOException, InterruptedException {
         String natsUrl = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_URL);
         String username = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_USERNAME);
@@ -116,14 +122,65 @@ class NatsStreamingConnection {
         String tlsTrustStorePassword = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TLS_TRUSTSTORE_PASSWORD);
         String tlsKeyManagerAlgorithm = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TLS_KEY_MANAGER_ALGORITHM);
         String tlsTrustManagerAlgorithm = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TLS_TRUST_MANAGER_ALGORITHM);
+        String bufferSize = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_BUFFER_SIZE);
+        String connectionName = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_CONNECTION_NAME);
+        String connectionTimeout = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_CONNECTION_TIMEOUT);
+        String inboxPrefix = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_INBOX_PREFIX);
+        String dataPortType = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_DATA_PORT_TYPE);
+        String maxControlLine = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_MAX_CONTROL_LINE);
+        String maxPingsOut = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_MAX_PINGS_OUT);
+        String maxReconnects = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_MAX_RECONNECTS);
+        String pingInterval = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_PING_INTERVAL);
+        String reconnectBufferSize = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_RECONNECT_BUFFER_SIZE);
+        String reconnectWait = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_RECONNECT_WAIT);
+        String requestCleanUpInterval = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_REQUEST_CLEANUP_INTERVAL);
+        String verbose = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_VERBOSE);
+        String pedantic = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_PEDANTIC);
+        String supportUtf8Subjects = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_SUPPORT_UTF8_SUBJECTS);
+        String turnOnAdvancedStats = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TURN_ON_ADVANCED_STATS);
+        String traceConnection = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TRACE_CONNECTION);
+        String useOldRequestStyle = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_USE_OLD_REQUEST_STYLE);
+        String noRandomize = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_NO_RANDOMIZE);
+        String noEcho = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_NO_ECHO);
 
         Properties serverConfig = new Properties();
 
-        serverConfig.setProperty(io.nats.client.Options.PROP_URL, natsUrl == null ? NatsStreamingConstants.DEFAULT_URL : natsUrl);
-        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_USERNAME, username);
-        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_PASSWORD, password);
+        serverConfig.setProperty(io.nats.client.Options.PROP_URL, natsUrl);
+        serverConfig.setProperty(io.nats.client.Options.PROP_USERNAME, username);
+        serverConfig.setProperty(io.nats.client.Options.PROP_PASSWORD, password);
+        serverConfig.setProperty(io.nats.client.Options.PROP_CONNECTION_NAME, connectionName);
+        serverConfig.setProperty(io.nats.client.Options.PROP_VERBOSE, verbose);
+        serverConfig.setProperty(io.nats.client.Options.PROP_PEDANTIC, pedantic);
+        serverConfig.setProperty(io.nats.client.Options.PROP_UTF8_SUBJECTS, supportUtf8Subjects);
+        serverConfig.setProperty(io.nats.client.Options.PROP_USE_OLD_REQUEST_STYLE, useOldRequestStyle);
+        serverConfig.setProperty(io.nats.client.Options.PROP_NORANDOMIZE, noRandomize);
+        serverConfig.setProperty(io.nats.client.Options.PROP_NO_ECHO, noEcho);
+
+        // Setting these properties with null will throw NullPointerException or setting them to an empty string will cause errors
+        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_INBOX_PREFIX, inboxPrefix);
+        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_RECONNECT_BUF_SIZE, reconnectBufferSize);
+        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_RECONNECT_WAIT, reconnectWait);
+        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_MAX_RECONNECT, maxReconnects);
+        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_CONNECTION_TIMEOUT, connectionTimeout);
+        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_MAX_CONTROL_LINE, maxControlLine);
+        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_PING_INTERVAL, pingInterval);
+        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_CLEANUP_INTERVAL, requestCleanUpInterval);
+        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_MAX_PINGS, maxPingsOut);
+        setServerConfigProperty(serverConfig, io.nats.client.Options.PROP_DATA_PORT_TYPE, dataPortType);
 
         io.nats.client.Options.Builder builder = new io.nats.client.Options.Builder(serverConfig);
+
+        if (StringUtils.isNotEmpty(bufferSize)) {
+            builder.bufferSize(Integer.parseInt(bufferSize));
+        }
+
+        if (Boolean.parseBoolean(turnOnAdvancedStats)) {
+            builder.turnOnAdvancedStats();
+        }
+
+        if (Boolean.parseBoolean(traceConnection)) {
+            builder.traceConnection();
+        }
 
         if (StringUtils.isNotEmpty(tlsProtocol + tlsTrustStoreType + tlsTrustStoreLocation + tlsTrustStorePassword + tlsKeyStoreType + tlsKeyStoreLocation + tlsKeyStorePassword + tlsKeyManagerAlgorithm + tlsTrustManagerAlgorithm)) {
             SSLContext sslContext = createSSLContext(new TLSConnection(tlsProtocol, tlsTrustStoreType, tlsTrustStoreLocation, tlsTrustStorePassword, tlsKeyStoreType, tlsKeyStoreLocation, tlsKeyStorePassword, tlsKeyManagerAlgorithm, tlsTrustManagerAlgorithm));

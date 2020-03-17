@@ -20,26 +20,46 @@
     <parameter name="url" description="The format is nats://host1:port1."/>
     <parameter name="clientId" description="Unique ID of the publisher."/>
     <parameter name="clusterId" description="ID of the cluster to connect to."/>
-    <parameter name="useCoreNatsConnection" description=""/>
-    <parameter name="natsUrl" description=""/>
-    <parameter name="username" description="Username for authentication."/>
-    <parameter name="password" description="Password for authentication."/>
-    <parameter name="tlsProtocol" description="The TLS protocol used to generate the SSLContext."/>
-    <parameter name="tlsKeyStoreType" description="The format of the key store file."/>
-    <parameter name="tlsKeyStoreLocation" description="The location of the key store file."/>
-    <parameter name="tlsKeyStorePassword" description="The password for the key store file."/>
-    <parameter name="tlsTrustStoreType" description="The format of the trust store file."/>
-    <parameter name="tlsTrustStoreLocation" description="The location of the trust store file."/>
-    <parameter name="tlsTrustStorePassword" description="The password for the trust store file."/>
-    <parameter name="tlsKeyManagerAlgorithm" description="The TLS algorithm for the key manager factory."/>
-    <parameter name="tlsTrustManagerAlgorithm" description="The TLS algorithm for the trust manager factory."/>
-    <parameter name="maxPubAcksInFlight" description=""/>
-    <parameter name="pubAckWait" description=""/>
-    <parameter name="connectWait" description=""/>
-    <parameter name="discoverPrefix" description=""/>
-    <parameter name="maxPingsOut" description=""/>
-    <parameter name="pingInterval" description=""/>
-    <parameter name="traceConnection" description=""/>
+    <parameter name="useCoreNatsConnection" description="CORE NATS - Configure a Core NATS connection to streaming connection."/>
+    <parameter name="natsUrl" description="CORE NATS - Core NATS URL."/>
+    <parameter name="username" description="CORE NATS - Username for authentication."/>
+    <parameter name="password" description="CORE NATS - Password for authentication."/>
+    <parameter name="tlsProtocol" description="CORE NATS - The TLS protocol used to generate the SSLContext."/>
+    <parameter name="tlsKeyStoreType" description="CORE NATS - The format of the key store file."/>
+    <parameter name="tlsKeyStoreLocation" description="CORE NATS - The location of the key store file."/>
+    <parameter name="tlsKeyStorePassword" description="CORE NATS - The password for the key store file."/>
+    <parameter name="tlsTrustStoreType" description="CORE NATS - The format of the trust store file."/>
+    <parameter name="tlsTrustStoreLocation" description="CORE NATS - The location of the trust store file."/>
+    <parameter name="tlsTrustStorePassword" description="CORE NATS - The password for the trust store file."/>
+    <parameter name="tlsKeyManagerAlgorithm" description="CORE NATS - The TLS algorithm for the key manager factory."/>
+    <parameter name="tlsTrustManagerAlgorithm" description="CORE NATS - The TLS algorithm for the trust manager factory."/>
+    <parameter name="bufferSize" description="CORE NATS - Initial size in bytes for connections."/>
+    <parameter name="connectionName" description="CORE NATS - Name for the connection."/>
+    <parameter name="connectionTimeout" description="CORE NATS - The connection timeout for connection attempts for each server."/>
+    <parameter name="inboxPrefix" description="CORE NATS - Inbox prefix to manage authorization of subjects."/>
+    <parameter name="dataPortType" description="CORE NATS - The class to use for the connections data port."/>
+    <parameter name="maxControlLine" description="CORE NATS - The maximum length of a control line sent by this connection."/>
+    <parameter name="natsMaxPingsOut" description="CORE NATS - Maximum number of pings the client can have in flight."/>
+    <parameter name="maxReconnects" description="CORE NATS - Maximum number of reconnect attempts. Use 0 to turn off auto-reconnect and -1 to turn on infinite reconnects."/>
+    <parameter name="natsPingInterval" description="CORE NATS - The interval between attempts to ping the server."/>
+    <parameter name="reconnectBufferSize" description="CORE NATS - Maximum number of bytes to buffer in the client when trying to reconnect."/>
+    <parameter name="reconnectWait" description="CORE NATS - Time to wait between reconnect attempts to the same server."/>
+    <parameter name="requestCleanUpInterval" description="CORE NATS - The interval between cleaning passes on outstanding request futures that are cancelled or timeout in the application code."/>
+    <parameter name="verbose" description="CORE NATS - Turn on verbose mode with the server."/>
+    <parameter name="pedantic" description="CORE NATS - Turn on pedantic mode with the server."/>
+    <parameter name="supportUTF8Subjects" description="CORE NATS - Enable UTF8 subjects"/>
+    <parameter name="turnOnAdvancedStats" description="CORE NATS - Enable advanced stats."/>
+    <parameter name="natsTraceConnection" description="CORE NATS - Enable connection trace messages."/>
+    <parameter name="useOldRequestStyle" description="CORE NATS - Turn on the old request style that uses a new inbox and subscriber for each request."/>
+    <parameter name="noRandomize" description="CORE NATS - Turn off server pool randomization. The server goes in the order they were configured or provided by a server in a cluster update."/>
+    <parameter name="noEcho" description="CORE NATS - This flag will prevent the server from echoing messages back to the connection if it has subscriptions on the subject being published to."/>
+    <parameter name="maxPubAcksInFlight" description="The maximum pub acks the server/client should allow."/>
+    <parameter name="pubAckWait" description="The time to wait for a pub ack."/>
+    <parameter name="connectWait" description="The time to wait for establishing a connection."/>
+    <parameter name="discoverPrefix" description="The prefix used in discovery for the cluster."/>
+    <parameter name="maxPingsOut" description="The max pings that can be out to the server before it is considered lost."/>
+    <parameter name="pingInterval" description="The time between pings to the server, if it is supported."/>
+    <parameter name="traceConnection" description="Enable connection trace messages."/>
     <parameter name="maxPoolSize" description="Maximum size of the connection pool."/>
     <sequence>
         <property expression="$func:url" name="nats.streaming.url" scope="operation" type="STRING"/>
@@ -58,6 +78,26 @@
         <property expression="$func:tlsTrustStorePassword" name="nats.core.tlsTrustStorePassword"/>
         <property expression="$func:tlsKeyManagerAlgorithm" name="nats.core.tlsKeyManagerAlgorithm"/>
         <property expression="$func:tlsTrustManagerAlgorithm" name="nats.core.tlsTrustManagerAlgorithm"/>
+        <property expression="$func:bufferSize" name="nats.core.bufferSize"/>
+        <property expression="$func:connectionName" name="nats.core.connectionName"/>
+        <property expression="$func:connectionTimeout" name="nats.core.connectionTimeout"/>
+        <property expression="$func:inboxPrefix" name="nats.core.inboxPrefix"/>
+        <property expression="$func:dataPortType" name="nats.core.dataPortType"/>
+        <property expression="$func:maxControlLine" name="nats.core.maxControlLine"/>
+        <property expression="$func:natsMaxPingsOut" name="nats.core.maxPingsOut"/>
+        <property expression="$func:maxReconnects" name="nats.core.maxReconnects"/>
+        <property expression="$func:natsPingInterval" name="nats.core.pingInterval"/>
+        <property expression="$func:reconnectBufferSize" name="nats.core.reconnectBufferSize"/>
+        <property expression="$func:reconnectWait" name="nats.core.reconnectWait"/>
+        <property expression="$func:requestCleanUpInterval" name="nats.core.requestCleanUpInterval"/>
+        <property expression="$func:verbose" name="nats.core.verbose"/>
+        <property expression="$func:pedantic" name="nats.core.pedantic"/>
+        <property expression="$func:supportUTF8Subjects" name="nats.core.supportUTF8Subjects"/>
+        <property expression="$func:turnOnAdvancedStats" name="nats.core.turnOnAdvancedStats"/>
+        <property expression="$func:natsTraceConnection" name="nats.core.traceConnection"/>
+        <property expression="$func:useOldRequestStyle" name="nats.core.useOldRequestStyle"/>
+        <property expression="$func:noRandomize" name="nats.core.noRandomize"/>
+        <property expression="$func:noEcho" name="nats.core.noEcho"/>
         <property expression="$func:maxPubAcksInFlight" name="nats.streaming.maxPubAcksInFlight"/>
         <property expression="$func:pubAckWait" name="nats.streaming.pubAckWait"/>
         <property expression="$func:connectWait" name="nats.streaming.connectWait"/>

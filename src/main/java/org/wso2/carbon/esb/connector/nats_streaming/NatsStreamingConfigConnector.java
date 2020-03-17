@@ -29,6 +29,12 @@ public class NatsStreamingConfigConnector extends AbstractConnector {
     public void connect(MessageContext messageContext) {
         String url = (String) messageContext.getProperty(NatsStreamingConstants.URL);
         String clusterId = (String) messageContext.getProperty(NatsStreamingConstants.CLUSTER_ID);
+        String maxPoolSize = validateMaxPoolSize((String) messageContext.getProperty(NatsStreamingConstants.MAX_CONNECTION_POOL_SIZE));
+
+        // Properties for Core NATS connection if using a custm Core NATS connection.
+        String natsUrl = (String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_URL);
+        String username = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_USERNAME));
+        String password = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_PASSWORD));
         String tlsProtocol = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TLS_PROTOCOL));
         String tlsKeyStoreType = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TLS_KEYSTORE_TYPE));
         String tlsKeyStoreLocation = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TLS_KEYSTORE_LOCATION));
@@ -38,18 +44,21 @@ public class NatsStreamingConfigConnector extends AbstractConnector {
         String tlsTrustStorePassword = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TLS_TRUSTSTORE_PASSWORD));
         String tlsKeyManagerAlgorithm = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TLS_KEY_MANAGER_ALGORITHM));
         String tlsTrustManagerAlgorithm = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_TLS_TRUST_MANAGER_ALGORITHM));
-        String maxPoolSize = (String) messageContext.getProperty(NatsStreamingConstants.MAX_CONNECTION_POOL_SIZE);
-
-        try {
-            if (Integer.parseInt(maxPoolSize) < 1) {
-                maxPoolSize = NatsStreamingConstants.DEFAULT_CONNECTION_POOL_SIZE;
-            }
-        } catch (NumberFormatException e) {
-            maxPoolSize = NatsStreamingConstants.DEFAULT_CONNECTION_POOL_SIZE;
-        }
+        String connectionName = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_CONNECTION_NAME));
+        String verbose = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_VERBOSE));
+        String pedantic = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_PEDANTIC));
+        String supportUtf8Subjects = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_SUPPORT_UTF8_SUBJECTS));
+        String useOldRequestStyle = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_USE_OLD_REQUEST_STYLE));
+        String noRandomize = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_NO_RANDOMIZE));
+        String noEcho = validateParameter((String) messageContext.getProperty(NatsStreamingConstants.NATS_CORE_NO_ECHO));
 
         messageContext.setProperty(NatsStreamingConstants.URL, url == null ? NatsStreamingConstants.DEFAULT_URL : url);
         messageContext.setProperty(NatsStreamingConstants.CLUSTER_ID, clusterId == null ? NatsStreamingConstants.DEFAULT_CLUSTER_ID : clusterId);
+
+        // Setting properties for Core NATS connection if using a custm Core NATS connection.
+        messageContext.setProperty(NatsStreamingConstants.NATS_CORE_URL, natsUrl == null ? NatsStreamingConstants.DEFAULT_URL : natsUrl);
+        messageContext.setProperty(NatsStreamingConstants.NATS_CORE_USERNAME, username);
+        messageContext.setProperty(NatsStreamingConstants.NATS_CORE_PASSWORD, password);
         messageContext.setProperty(NatsStreamingConstants.NATS_CORE_TLS_PROTOCOL, tlsProtocol);
         messageContext.setProperty(NatsStreamingConstants.NATS_CORE_TLS_KEYSTORE_TYPE, tlsKeyStoreType);
         messageContext.setProperty(NatsStreamingConstants.NATS_CORE_TLS_KEYSTORE_LOCATION, tlsKeyStoreLocation);
@@ -59,6 +68,13 @@ public class NatsStreamingConfigConnector extends AbstractConnector {
         messageContext.setProperty(NatsStreamingConstants.NATS_CORE_TLS_TRUSTSTORE_PASSWORD, tlsTrustStorePassword);
         messageContext.setProperty(NatsStreamingConstants.NATS_CORE_TLS_KEY_MANAGER_ALGORITHM, tlsKeyManagerAlgorithm);
         messageContext.setProperty(NatsStreamingConstants.NATS_CORE_TLS_TRUST_MANAGER_ALGORITHM, tlsTrustManagerAlgorithm);
+        messageContext.setProperty(NatsStreamingConstants.NATS_CORE_CONNECTION_NAME, connectionName);
+        messageContext.setProperty(NatsStreamingConstants.NATS_CORE_VERBOSE, verbose);
+        messageContext.setProperty(NatsStreamingConstants.NATS_CORE_PEDANTIC, pedantic);
+        messageContext.setProperty(NatsStreamingConstants.NATS_CORE_SUPPORT_UTF8_SUBJECTS, supportUtf8Subjects);
+        messageContext.setProperty(NatsStreamingConstants.NATS_CORE_USE_OLD_REQUEST_STYLE, useOldRequestStyle);
+        messageContext.setProperty(NatsStreamingConstants.NATS_CORE_NO_RANDOMIZE, noRandomize);
+        messageContext.setProperty(NatsStreamingConstants.NATS_CORE_NO_ECHO, noEcho);
         messageContext.setProperty(NatsStreamingConstants.MAX_CONNECTION_POOL_SIZE, maxPoolSize);
     }
 
@@ -70,5 +86,22 @@ public class NatsStreamingConfigConnector extends AbstractConnector {
      */
     private String validateParameter(String parameter) {
         return (parameter == null) ? "" : parameter;
+    }
+
+    /**
+     * Validate maximum pool size parameter.
+     *
+     * @param maxPoolSize the maximum pool size to validate.
+     * @return the updated maximum pool size.
+     */
+    private String validateMaxPoolSize(String maxPoolSize) {
+        try {
+            if (Integer.parseInt(maxPoolSize) < 1) {
+                maxPoolSize = NatsStreamingConstants.DEFAULT_CONNECTION_POOL_SIZE;
+            }
+        } catch (NumberFormatException e) {
+            maxPoolSize = NatsStreamingConstants.DEFAULT_CONNECTION_POOL_SIZE;
+        }
+        return maxPoolSize;
     }
 }
