@@ -78,7 +78,7 @@ class NatsStreamingConnectionPool {
      * @return the connection or null.
      */
     synchronized StreamingConnection getConnectionFromPool() throws InterruptedException {
-        printDebugLog("Get a NATS connection from the connection pool.");
+        printDebugLog("Get a NATS Streaming connection from the connection pool.");
         if (connectionPool.size() > 0) {
             StreamingConnection connection = connectionPool.remove(0);
             connectionsBeingUsed.add(connection);
@@ -94,7 +94,7 @@ class NatsStreamingConnectionPool {
      * @param connection the publisher connection.
      */
     synchronized void putConnectionBackToPool(StreamingConnection connection) {
-        printDebugLog("Put the NATS connection back to connection pool.");
+        printDebugLog("Put the NATS Streaming connection back to connection pool.");
         connectionPool.add(connection);
         connectionsBeingUsed.remove(connection);
         notify();

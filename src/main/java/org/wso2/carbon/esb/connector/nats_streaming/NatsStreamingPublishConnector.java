@@ -69,7 +69,7 @@ public class NatsStreamingPublishConnector extends AbstractConnector {
      * @param subject        The subject to publish the message.
      * @param message        The message to publish.
      * @param messageContext The message context.
-     * @param connectionPool The NatsConnectionPool instance to get a connection from the pool if available.
+     * @param connectionPool The NatsStreamingConnectionPool instance to get a connection from the pool if available.
      */
     private void sendMessage(String subject, String message, MessageContext messageContext,
             NatsStreamingConnectionPool connectionPool) throws IOException, InterruptedException, TimeoutException {
@@ -78,14 +78,14 @@ public class NatsStreamingPublishConnector extends AbstractConnector {
                 natsMessageWithHeaders(new NatsStreamingMessage(message, getDynamicParameters(messageContext, subject)))
                         .getBytes(StandardCharsets.UTF_8));
         connectionPool.putConnectionBackToPool(publisher);
-        log.info("Message Sent: " + message);
+        printDebugLog("Message Sent: " + message);
     }
 
     /**
      * Get a connection from the connection pool.
      *
      * @param messageContext The message context.
-     * @param connectionPool The NatsConnectionPool instance.
+     * @param connectionPool The NatsStreamingConnectionPool instance.
      * @return a connection from the connection pool
      */
     private StreamingConnection getConnectionFromConnectionPool(NatsStreamingConnectionPool connectionPool, MessageContext messageContext)

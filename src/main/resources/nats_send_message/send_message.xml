@@ -17,7 +17,7 @@
 -->
 <template xmlns="http://ws.apache.org/ns/synapse" name="sendMessage">
 	<parameter name="subject" description="Subject of the message to publish to"/>
-	<parameter name="getResponse" description="Send the message with or without a response"/>
+	<parameter name="getReply" description="Send the message with or without a reply"/>
 	<sequence>
 		<class name="org.wso2.carbon.esb.connector.nats_core.NatsPublishConnector" />
 	</sequence>
