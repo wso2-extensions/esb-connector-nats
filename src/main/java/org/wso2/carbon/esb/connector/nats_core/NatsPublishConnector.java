@@ -84,7 +84,9 @@ public class NatsPublishConnector extends AbstractConnector {
         String replySubject = NUID.nextGlobal();
         CountDownLatch latch = new CountDownLatch(1);
         Dispatcher dispatcher = publisher.createDispatcher((natsMessage) -> {
-            printDebugLog("Message Sent: " + message + ", Reply: " + new String(natsMessage.getData(), StandardCharsets.UTF_8) + "\n");
+            if (log.isDebugEnabled()) {
+                log.debug("Message Sent: " + message + ", Reply: " + new String(natsMessage.getData(), StandardCharsets.UTF_8) + "\n");
+            }
             latch.countDown();
         });
         dispatcher.subscribe(replySubject);
@@ -107,7 +109,9 @@ public class NatsPublishConnector extends AbstractConnector {
         if (publisher.getStatus() != Connection.Status.DISCONNECTED) {
             publisher.publish(subject, natsMessageWithHeaders(new NatsMessage(message, getDynamicParameters(messageContext, subject))).getBytes(StandardCharsets.UTF_8));
             connectionPool.putConnectionBackToPool(publisher);
-            printDebugLog("Message Sent: " + message);
+            if (log.isDebugEnabled()) {
+                log.debug("Message Sent: " + message);
+            }
         }
     }
 
@@ -211,17 +215,6 @@ public class NatsPublishConnector extends AbstractConnector {
      */
     private static String natsMessageWithHeaders(NatsMessage message) {
         return new GsonBuilder().create().toJson(message);
-    }
-
-    /**
-     * Check if debug is enabled for logging.
-     *
-     * @param text log text
-     */
-    private void printDebugLog(String text) {
-        if (log.isDebugEnabled()) {
-            log.debug(text);
-        }
     }
 }
 

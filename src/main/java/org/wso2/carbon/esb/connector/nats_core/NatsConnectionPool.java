@@ -48,7 +48,9 @@ class NatsConnectionPool {
         // If there are no connections in the pool to be used and maximum pool size has not been reached, a connection will be created and added to the pool.
         if (!isConnectionPoolFull(messageContext) && connectionPool.size() == 0) {
             connectionPool.add(new NatsConnection().createConnection(messageContext));
-            printDebugLog("Connection added to connection pool.");
+            if (log.isDebugEnabled()) {
+                log.debug("Connection added to connection pool.");
+            }
         }
     }
 
@@ -60,7 +62,9 @@ class NatsConnectionPool {
      */
     private boolean isConnectionPoolFull(MessageContext messageContext) {
         String maxPoolSize = (String) messageContext.getProperty(NatsConstants.MAX_CONNECTION_POOL_SIZE);
-        printDebugLog("Maximum pool size is " + maxPoolSize);
+        if (log.isDebugEnabled()) {
+            log.debug("Maximum pool size is " + maxPoolSize);
+        }
         return getConnectionPoolSize() >= Integer.parseInt(maxPoolSize);
     }
 
@@ -79,7 +83,9 @@ class NatsConnectionPool {
      * @return the connection or null.
      */
     synchronized Connection getConnectionFromPool() throws InterruptedException {
-        printDebugLog("Get a NATS connection from the connection pool.");
+        if (log.isDebugEnabled()) {
+            log.debug("Get a NATS connection from the connection pool.");
+        }
         if (connectionPool.size() > 0) {
             Connection connection = connectionPool.remove(0);
             connectionsBeingUsed.add(connection);
@@ -95,7 +101,9 @@ class NatsConnectionPool {
      * @param connection the publisher connection.
      */
     synchronized void putConnectionBackToPool(Connection connection) {
-        printDebugLog("Put the NATS connection back to connection pool.");
+        if (log.isDebugEnabled()) {
+            log.debug("Put the NATS connection back to connection pool.");
+        }
         connectionPool.add(connection);
         connectionsBeingUsed.remove(connection);
         notify();
@@ -111,16 +119,5 @@ class NatsConnectionPool {
             natsConnectionPool = new NatsConnectionPool();
         }
         return natsConnectionPool;
-    }
-
-    /**
-     * Check if debug is enabled for logging.
-     *
-     * @param text log text
-     */
-    private void printDebugLog(String text) {
-        if (log.isDebugEnabled()) {
-            log.debug(text);
-        }
     }
 }
