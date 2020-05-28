@@ -17,7 +17,7 @@
    under the License.
 -->
 <connector>
-    <component name="Nats" package="org.wso2.carbon.esb.connector" >
+    <component name="nats" package="org.wso2.carbon.esb.connector" >
         <dependency component="nats_config" />
         <dependency component="nats_send_message" />
         <dependency component="nats_streaming_config" />
