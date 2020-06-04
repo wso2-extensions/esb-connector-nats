@@ -4,22 +4,22 @@
 
 Below is a sample configuration that creates a publisher with security:
 ```
-<Nats.init>
+<nats.init>
     <servers>nats://localhost:4222</servers>
     <tlsKeyStoreLocation><PATH_TO_KEYSTORE_FILE></tlsKeyStoreLocation>
     <tlsKeyStorePassword>password</tlsKeyStorePassword>
     <tlsTrustStoreLocation><PATH_TO_TRUSTSTORE_FILE></tlsTrustStoreLocation>
     <tlsTrustStorePassword>password</tlsTrustStorePassword>
-</Nats.init>
+</nats.init>
 ```
 If you want to create a publisher without security, simply provide the ```<servers>``` parameter excluding the other parameters. If the <servers> parameter is
 not provided, the connector will automatically connect to nats://localhost:4222. You can connect to multiple 
 servers by providing a comma separated list in the ```<servers>``` parameter, for example:
 
 ```
-<Nats.init>
+<nats.init>
     <servers>nats://localhost:4222, nats://localhost:4223</servers>
-</Nats.init>
+</nats.init>
 ```
 
 ## Connecting with a username and password 
@@ -27,25 +27,25 @@ servers by providing a comma separated list in the ```<servers>``` parameter, fo
 Below is a sample configuration that connects to NATS with a username and password:
 
 ```
-<Nats.init>
+<nats.init>
     <servers>nats://localhost:4222</servers>
     <username>test</username>
     <password>test123</password>
-</Nats.init>
+</nats.init>
 ```
 ## Creating a connection pool
 
 Below is a sample configuration that creates a connection pool of 10 connections:
 
 ```
-<Nats.init>
+<nats.init>
     <servers>nats://localhost:4222</servers>
     <maxPoolSize>10</maxPoolSize>
-</Nats.init>
+</nats.init>
 ```
 If no value is provided, then a default value of 5 will be used.
 
-After configuring the connection in the <Nats.init> element, you can use the connector to send messages. Below are sample
+After configuring the connection in the <nats.init> element, you can use the connector to send messages. Below are sample
 scenarios for sending messages to NATS server.
 
 ## Sending a message
@@ -53,10 +53,10 @@ scenarios for sending messages to NATS server.
 Below is a sample configuration that can be used to send a message to NATS server on a subject and receive a Reply from the consumer:
 
 ```
-<Nats.sendMessage>
+<nats.sendMessage>
     <subject>test</subject>
     <getReply>true</getReply>
-</Nats.sendMessage>
+</nats.sendMessage>
 ```
 Omit the ```<getReply>``` parameter if you do not want a reply. 
 
@@ -65,11 +65,11 @@ Omit the ```<getReply>``` parameter if you do not want a reply.
 Below is a sample configuration that can be used to send a message to NATS server along with message headers:
 
 ```
-<Nats.sendMessage>
+<nats.sendMessage>
     <subject>test</subject>
     <getReply>true</getReply>
     <test.Content-Type>application/json</test.Content-Type>
-</Nats.sendMessage>
+</nats.sendMessage>
 ```
 You can provide any number of headers, but the format of the parameter is <SUBJECT_NAME.HEADER>.
 
@@ -78,14 +78,14 @@ You can provide any number of headers, but the format of the parameter is <SUBJE
 Below is a sample configuration that can be used to send a message to NATS server on multiple subjects:
 
 ```
-<Nats.sendMessage>
+<nats.sendMessage>
     <subject>test1</subject>
     <getReply>true</getReply>
-</Nats.sendMessage>
-<Nats.sendMessage>
+</nats.sendMessage>
+<nats.sendMessage>
     <subject>test2</subject>
     <getReply>true</getReply>
-</Nats.sendMessage>
+</nats.sendMessage>
 
 ```
 
@@ -96,11 +96,11 @@ Below is a sample configuration that can be used to send a message to NATS serve
 Below is a sample configuration that creates a connection to NATS Streaming server:
 
 ```
-<Nats.streamingInit>
+<nats.streamingInit>
     <url>nats://localhost:4222</url>
     <clientId>client123</clientId>
     <clusterId>cluster123</clusterId>
-</Nats.streamingInit>
+</nats.streamingInit>
 ```
 
 You can provide other parameters to the connection as given in the __nats-connector-config.md__ file.
@@ -110,16 +110,16 @@ You can provide other parameters to the connection as given in the __nats-connec
 Below is a sample configuration that creates a connection pool of 10 connections:
 
 ```
-<Nats.streamingInit>
+<nats.streamingInit>
     <url>nats://localhost:4222</url>
     <clientId>client123</clientId>
     <clusterId>cluster123</clusterId>
     <maxPoolSize>10</maxPoolSize>
-</Nats.streamingInit>
+</nats.streamingInit>
 ```
 If no value is provided, then a default value of 5 will be used.
 
-After configuring the connection in the <Nats.streamingInit> element, you can use the connector to send messages. Below are sample
+After configuring the connection in the <nats.streamingInit> element, you can use the connector to send messages. Below are sample
 scenarios for sending messages to NATS Streaming server.
 
 ## Sending a message
@@ -127,9 +127,9 @@ scenarios for sending messages to NATS Streaming server.
 Below is a sample configuration that can be used to send a message to NATS Streaming server on a subject/channel:
 
 ```
-<Nats.streamingSendMessage>
+<nats.streamingSendMessage>
     <subject>test</subject>
-</Nats.streamingSendMessage>
+</nats.streamingSendMessage>
 
 ```
 
@@ -138,10 +138,10 @@ Below is a sample configuration that can be used to send a message to NATS Strea
 Below is a sample configuration that can be used to send a message to NATS Streaming server along with message headers:
 
 ```
-<Nats.streamingSendMessage>
+<nats.streamingSendMessage>
     <subject>test</subject>
     <test.Content-Type>application/json</test.Content-Type>
-</Nats.streamingSendMessage>
+</nats.streamingSendMessage>
 ```
 You can provide any number of headers, but the format of the parameter is <SUBJECT_NAME.HEADER>.
 
@@ -150,12 +150,12 @@ You can provide any number of headers, but the format of the parameter is <SUBJE
 Below is a sample configuration that can be used to send a message to NATS Streaming server on multiple subjects:
 
 ```
-<Nats.streamingSendMessage>
+<nats.streamingSendMessage>
     <subject>test1</subject>
-</Nats.streamingSendMessage>
-<Nats.streamingSendMessage>
+</nats.streamingSendMessage>
+<nats.streamingSendMessage>
     <subject>test2</subject>
-</Nats.streamingSendMessage>
+</nats.streamingSendMessage>
 
 ```
 
@@ -169,7 +169,7 @@ This may be because you want to establish a secure TLS connection to NATS server
 to configure a connection with TLS.
 
 ```
-<Nats.streamingInit>
+<nats.streamingInit>
     <url>nats://localhost:4222</url>
     <clientId>client123</clientId>
     <clusterId>cluster123</clusterId>
@@ -179,7 +179,7 @@ to configure a connection with TLS.
     <tlsKeyStorePassword>password</tlsKeyStorePassword>
     <tlsTrustStoreLocation><PATH_TO_TRUSTSTORE_FILE></tlsTrustStoreLocation>
     <tlsTrustStorePassword>password</tlsTrustStorePassword>
-</Nats.streamingInit>
+</nats.streamingInit>
 ```
 
 ### Connecting with a username and password
@@ -188,11 +188,11 @@ Below is a sample configuration that connects to NATS server with a username and
 connection with NATS Streaming connection:
 
 ```
-<Nats.init>
+<nats.init>
     <url>nats://localhost:4222</url>
     <useCoreNatsConnection>true</useCoreNatsConnection>
     <natsUrl>nats://localhost:4223</natsUrl>
     <username>test</username>
     <password>test123</password>
-</Nats.init>
+</nats.init>
 ```
