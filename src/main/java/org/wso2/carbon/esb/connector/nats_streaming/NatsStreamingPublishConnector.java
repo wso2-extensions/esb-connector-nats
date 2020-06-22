@@ -64,7 +64,7 @@ public class NatsStreamingPublishConnector extends AbstractConnector {
     }
 
     /**
-     * Send the message (fire and forget).
+     * Send the message.
      *
      * @param subject        The subject to publish the message.
      * @param message        The message to publish.
