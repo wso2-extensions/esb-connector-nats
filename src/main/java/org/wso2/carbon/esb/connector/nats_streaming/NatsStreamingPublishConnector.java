@@ -64,7 +64,7 @@ public class NatsStreamingPublishConnector extends AbstractConnector {
     }
 
     /**
-     * Send the message (fire and forget).
+     * Send the message.
      *
      * @param subject        The subject to publish the message.
      * @param message        The message to publish.
@@ -78,7 +78,9 @@ public class NatsStreamingPublishConnector extends AbstractConnector {
                 natsMessageWithHeaders(new NatsStreamingMessage(message, getDynamicParameters(messageContext, subject)))
                         .getBytes(StandardCharsets.UTF_8));
         connectionPool.putConnectionBackToPool(publisher);
-        printDebugLog("Message Sent: " + message);
+        if (log.isDebugEnabled()) {
+            log.debug("Message Sent: " + message);
+        }
     }
 
     /**
@@ -172,17 +174,6 @@ public class NatsStreamingPublishConnector extends AbstractConnector {
      */
     private static String natsMessageWithHeaders(NatsStreamingMessage message) {
         return new GsonBuilder().create().toJson(message);
-    }
-
-    /**
-     * Check if debug is enabled for logging.
-     *
-     * @param text log text
-     */
-    private void printDebugLog(String text) {
-        if (log.isDebugEnabled()) {
-            log.debug(text);
-        }
     }
 }
 
